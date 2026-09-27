@@ -152,6 +152,15 @@ describe("dream peek", () => {
     expect(dreamSays({ phase: "error", t: now, error: "boom" }, now, "B").detail).toBe("boom");
   });
 
+  it("says how much of its instinct its own brain kept, and warns when a dream wrecked it", () => {
+    const ok = dreamSays({ phase: "done", t: now, model: "own:gen2", instinct: [270, 266, 300] }, now, "B");
+    expect(ok.detail).toContain("266 of 300");
+    expect(ok.detail).not.toContain("forgot");
+    const bad = dreamSays({ phase: "done", t: now, model: "own:gen2", instinct: [270, 180, 300] }, now, "B");
+    expect(bad.detail).toContain("forgot");
+    expect(dreamSays({ phase: "done", t: now, model: "own:gen2" }, now, "B").detail).toBe("Its brain grew a little in the night.");
+  });
+
   it("glow is per weight and on a fixed scale, so big matrices don't win and the map brightens over time", () => {
     expect(glow(0, 100)).toBe(0);
     expect(glow(1, 0)).toBe(0);

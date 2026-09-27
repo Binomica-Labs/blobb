@@ -13,7 +13,8 @@ const dev = watch || process.argv.includes("--dev");
 rmSync("public/js", { recursive: true, force: true });
 
 const options = {
-  entryPoints: ["src/main.ts"],
+  // The own brain thinks in a worker: its own entry, next to main.js (see ScratchBackend).
+  entryPoints: ["src/main.ts", "src/scratch-worker.ts"],
   bundle: true,
   splitting: true,
   format: "esm",

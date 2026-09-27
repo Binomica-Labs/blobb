@@ -14,6 +14,8 @@ export interface DreamStatus {
   about?: string;
   error?: string;
   model?: string;
+  /** Its own brain's dreams: held-out instinct lessons it got right [before, after, out of]. */
+  instinct?: [number, number, number];
 }
 
 export interface DreamMap {
@@ -57,11 +59,18 @@ export function describe(s: DreamStatus, now: number, name: string): DreamView {
       detail: `Step ${String(s.step ?? 0)} of ${String(s.total ?? "?")} - ${left}` };
   }
   if (s.phase === "waking") {
-    return { kind: "asleep", progress: 1, title: `${name} is waking up${gen}`, detail: "Saving the new brain and handing it to Ollama…" };
+    return { kind: "asleep", progress: 1, title: `${name} is waking up${gen}`, detail: "Saving the new brain…" };
   }
   if (s.phase === "done") {
-    return { kind: "done", progress: 1, title: `${name} woke up${gen}`,
-      detail: s.model ? `The new brain is "${s.model}".` : "The new brain is ready." };
+    let detail = s.model?.startsWith("own:") ? "Its brain grew a little in the night." : s.model ? `The new brain is "${s.model}".` : "The new brain is ready.";
+    const [before, after, of] = s.instinct ?? [];
+    if (before !== undefined && after !== undefined && of) {
+      detail += ` It still gets ${String(after)} of ${String(of)} practice lessons right (${String(before)} before).`;
+      if ((before - after) / of > 0.05) {
+        detail += ` It forgot a lot of what it knew - too much to avoid, too little to do? You can keep the old brain: just don't wake it up with this one.`;
+      }
+    }
+    return { kind: "done", progress: 1, title: `${name} woke up${gen}`, detail };
   }
   return { kind: "error", progress, title: "The dream turned into a nightmare", detail: s.error ?? `Unknown phase "${s.phase}".` };
 }

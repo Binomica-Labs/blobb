@@ -2,6 +2,7 @@
 # CPU-only torch keeps the install ~1 GB instead of ~5:
 #   python -m venv .venv && .venv/bin/pip install -r trainer/requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
 torch>=2.14
+numpy                 # the own brain's fp16 save files (python -m blobb.scratch)
 transformers>=5.17,<6
 peft>=0.21
 safetensors>=0.8

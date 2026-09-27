@@ -1,0 +1,330 @@
+[
+ {
+  "user": "You are a blob. Food 49 (full), energy 41 (tired). Holding: nothing.\nYou see:\n- tower: 1 south (the wizard's, deliver things here)\n- berry: 2 east\n- gate: 1 north, 4 east (very low, flat things fit under)\n- berry: 3 north, 3 west (up high; can't reach as blob: it's up too high to climb)\n- mushroom: 2 south, 4 west\n- gap: 2 south, 4 east\n- mushroom: 3 north, 4 east (can't reach as blob: a low gate is in the way)\n- stick: 7 south, 1 east\n- rock: 5 south, 3 east\nThe wizard says: \"hey, get the stick and bring it to me now\"",
+  "decision": {
+   "thought": "The wizard wants his stick. Grab it, then bring it to the tower.",
+   "plan": [
+    {
+     "do": "grab",
+     "arg": "stick"
+    },
+    {
+     "do": "deliver",
+     "arg": "none"
+    }
+   ],
+   "say": "For you, wizard!"
+  }
+ },
+ {
+  "user": "You are a blob. Food 38 (hungry), energy 35 (tired). Holding: nothing.\nYou see:\n- gap: 1 east\n- rock: 2 south\n- berry: 3 north, 1 west\n- mushroom: 2 south, 3 east (can't reach as blob: there's a gap in the way)\n- tower: 2 north, 3 west (the wizard's, deliver things here)\n- gate: 4 north, 1 east (very low, flat things fit under)\n- berry: 4 south, 2 east (can't reach as blob: there's a gap in the way)\n- stick: 4 south, 2 west\n- mushroom: 1 north, 7 west\nThe wizard says: \"blobb, my cane, fetch it already\"",
+  "decision": {
+   "thought": "The wizard wants his stick. Grab it, then bring it to the tower.",
+   "plan": [
+    {
+     "do": "grab",
+     "arg": "stick"
+    },
+    {
+     "do": "deliver",
+     "arg": "none"
+    }
+   ],
+   "say": "Fetched!"
+  }
+ },
+ {
+  "user": "You are a blob. Food 45 (full), energy 31 (tired). Holding: nothing.\nYou see:\n- gap: 2 east\n- berry: 3 north\n- rock: 2 south, 1 east\n- tower: 2 north, 2 west (the wizard's, deliver things here)\n- stick: 4 south, 1 west\n- gate: 4 north, 2 east (very low, flat things fit under)\n- berry: 4 south, 3 east (can't reach as blob: there's a gap in the way)\n- mushroom: 1 north, 6 west\n- tree: 3 south, 4 west (1 fruit up in it)\nThe wizard says: \"shake a fruit loose and bring it here\"",
+  "decision": {
+   "thought": "I'll ram the tree as a ball to knock a fruit down, then carry it to the tower.",
+   "plan": [
+    {
+     "do": "morph",
+     "arg": "ball"
+    },
+    {
+     "do": "push",
+     "arg": "tree"
+    },
+    {
+     "do": "grab",
+     "arg": "berry"
+    },
+    {
+     "do": "deliver",
+     "arg": "none"
+    }
+   ],
+   "say": "Bonk and deliver!"
+  }
+ },
+ {
+  "user": "You are a blob. Food 76 (full), energy 96 (fine). Holding: nothing.\nYou see:\n- stick: 2 east\n- tree: 1 north, 1 west (2 fruit up in it)\n- gap: 5 east\n- rock: 2 north, 4 east\n- tower: 6 north, 1 east (the wizard's, deliver things here)\n- mushroom: 5 north, 3 west\n- mushroom: 2 north, 7 east (can't reach as blob: there's a gap in the way)\nRecently: Deliver what? you're not holding anything. Grab something first.\nYour last plan failed: deliver -> Deliver what? you're not holding anything. Grab something first. Try something different.\nThe wizard says: \"mushroom. tower. go.\"",
+  "decision": {
+   "thought": "The wizard wants a mushroom. I'll carry it to the tower instead of eating it.",
+   "plan": [
+    {
+     "do": "grab",
+     "arg": "mushroom"
+    },
+    {
+     "do": "deliver",
+     "arg": "none"
+    }
+   ],
+   "say": "Here you go!"
+  }
+ },
+ {
+  "user": "You are a blob. Food 98 (full), energy 59 (fine). Holding: stick.\nYou see:\n- tower: 1 north, 3 east (the wizard's, deliver things here)\n- tree: 4 south, 1 east (2 fruit up in it)\n- berry: 2 north, 5 east\n- gap: 7 east\n- berry: 6 north, 2 west (up high; can't reach as blob: it's up too high to climb)\n- rock: 3 south, 6 east\nThe wizard says: \"listen, drop it\"",
+  "decision": {
+   "thought": "Okay, I'll put it down.",
+   "plan": [
+    {
+     "do": "drop",
+     "arg": "none"
+    }
+   ],
+   "say": "There you go."
+  }
+ },
+ {
+  "user": "You are a blob. Food 66 (full), energy 38 (tired). Holding: nothing.\nYou see:\n- tower: 1 north (the wizard's, deliver things here)\n- berry: 2 north, 2 east\n- mushroom: 4 west\n- gap: 4 east\n- stick: 5 south, 1 east\n- rock: 3 south, 3 east\n- tree: 4 south, 2 west (2 fruit up in it)\n- gate: 3 north, 4 east (very low, flat things fit under)\n- berry: 5 north, 3 west (up high; can't reach as blob: it's up too high to climb)\nThe wizard says: \"i want you as a bouncy ball\"",
+  "decision": {
+   "thought": "The wizard wants me to be a ball. Squish!",
+   "plan": [
+    {
+     "do": "morph",
+     "arg": "ball"
+    }
+   ],
+   "say": "Look at me!"
+  }
+ },
+ {
+  "user": "You are a blob. Food 86 (full), energy 52 (fine). Holding: nothing.\nYou see:\n- stick: 2 south\n- rock: 2 east\n- gap: 3 east (can't reach as blob: there's a gap in the way)\n- tree: 1 south, 3 west (2 fruit up in it)\n- mushroom: 5 east (can't reach as blob: there's a gap in the way)\n- tower: 4 north, 1 west (the wizard's, deliver things here)\n- berry: 2 south, 4 east (can't reach as blob: there's a gap in the way)\n- berry: 5 north, 1 east\n- gate: 6 north, 3 east (very low, flat things fit under)\nThe wizard says: \"Go on, get me the muhroom over the gap!!\"",
+  "decision": {
+   "thought": "A gap! As a spring I can jump it, grab the mushroom and jump back.",
+   "plan": [
+    {
+     "do": "morph",
+     "arg": "spring"
+    },
+    {
+     "do": "grab",
+     "arg": "mushroom"
+    },
+    {
+     "do": "deliver",
+     "arg": "none"
+    }
+   ],
+   "say": "Boing and back!"
+  }
+ },
+ {
+  "user": "You are a blob. Food 36 (hungry), energy 77 (fine). Holding: nothing.\nYou see:\n- tower: 2 south, 1 west (the wizard's, deliver things here)\n- gate: 3 east (very low, flat things fit under)\n- berry: 2 north, 4 west (up high; can't reach as blob: it's up too high to climb)\n- gap: 3 south, 3 east\n- stick: 8 south\n- rock: 6 south, 2 east\n- berry: 3 north, 6 west (up high; can't reach as blob: it's up too high to climb)\nRecently: You can't get to the berry as a blob: it's up too high to climb.\nYour last plan failed: eat berry -> You can't get to the berry as a blob: it's up too high to climb. Try something different.\nThe wizard says: \"Oi! eat the berry up on the cliff, blob\"",
+  "decision": {
+   "thought": "The berry is up too high. A spring can jump up there!",
+   "plan": [
+    {
+     "do": "morph",
+     "arg": "spring"
+    },
+    {
+     "do": "eat",
+     "arg": "berry"
+    }
+   ],
+   "say": "Boing!"
+  }
+ },
+ {
+  "user": "You are a blob. Food 31 (hungry), energy 59 (fine). Holding: nothing.\nYou see:\n- tower: 1 north (the wizard's, deliver things here)\n- berry: 2 north, 2 east\n- gap: 4 east\n- stick: 5 south, 1 east\n- rock: 3 south, 3 east\n- tree: 4 south, 2 west (2 fruit up in it)\n- gate: 3 north, 4 east (very low, flat things fit under)\n- berry: 5 north, 3 west (up high; can't reach as blob: it's up too high to climb)\n- mushroom: 3 south, 6 east (can't reach as blob: there's a gap in the way)\nThe wizard says: \"YOU THERE, GET ME THE MUSHROOM OVER THE GAP ALREADY\"",
+  "decision": {
+   "thought": "A gap! As a spring I can jump it, grab the mushroom and jump back.",
+   "plan": [
+    {
+     "do": "morph",
+     "arg": "spring"
+    },
+    {
+     "do": "grab",
+     "arg": "mushroom"
+    },
+    {
+     "do": "deliver",
+     "arg": "none"
+    }
+   ],
+   "say": "Boing and back!"
+  }
+ },
+ {
+  "user": "You are a blob. Food 49 (full), energy 95 (fine). Holding: nothing.\nYou see:\n- gap: 1 south\n- gate: 2 north (very low, flat things fit under)\n- mushroom: 4 north (can't reach as blob: a low gate is in the way)\n- tower: 4 west (the wizard's, deliver things here)\n- rock: 4 south, 1 west\n- berry: 5 north, 1 east (can't reach as blob: a low gate is in the way)\n- stick: 6 south, 3 west\nRecently: You can't get to the mushroom as a blob: a low gate is in the way.\nYour last plan failed: eat mushroom -> You can't get to the mushroom as a blob: a low gate is in the way. Try something different.\nThe wizard says: \"go on, slide under the gate into the garden if you can manage it\"",
+  "decision": {
+   "thought": "The gate is very low. If I'm a flat puddle I can slide under it!",
+   "plan": [
+    {
+     "do": "morph",
+     "arg": "puddle"
+    },
+    {
+     "do": "eat",
+     "arg": "mushroom"
+    }
+   ],
+   "say": "Squeeze..."
+  }
+ },
+ {
+  "user": "You are a blob. Food 65 (full), energy 72 (fine). Holding: nothing.\nYou see:\n- tower: 1 west (the wizard's, deliver things here)\n- gap: 1 south, 3 east\n- gate: 2 north, 3 east (very low, flat things fit under)\n- stick: 6 south\n- rock: 4 south, 2 east\n- mushroom: 4 north, 3 east (can't reach as blob: a low gate is in the way)\n- berry: 4 north, 4 west (up high; can't reach as blob: it's up too high to climb)\n- tree: 5 south, 3 west (3 fruit up in it)\n- berry: 5 north, 4 east (can't reach as blob: a low gate is in the way)\nThe wizard says: \"blobb, enter the garden if you can manage it\"",
+  "decision": {
+   "thought": "The gate is very low. If I'm a flat puddle I can slide under it!",
+   "plan": [
+    {
+     "do": "morph",
+     "arg": "puddle"
+    },
+    {
+     "do": "eat",
+     "arg": "mushroom"
+    }
+   ],
+   "say": "Sploosh!"
+  }
+ },
+ {
+  "user": "You are a blob. Food 35 (hungry), energy 62 (fine). Holding: nothing.\nYou see:\n- berry: 2 north, 3 west (up high; can't reach as blob: it's up too high to climb)\n- tower: 3 south, 2 east (the wizard's, deliver things here)\n- mushroom: 1 north, 6 east (can't reach as blob: a low gate is in the way)\n- gate: 1 south, 6 east (very low, flat things fit under)\n- tree: 8 south (3 fruit up in it)\nThe wizard says: \"Blob! the high one, eat the berry\"",
+  "decision": {
+   "thought": "The berry is up too high. A spring can jump up there!",
+   "plan": [
+    {
+     "do": "morph",
+     "arg": "spring"
+    },
+    {
+     "do": "eat",
+     "arg": "berry"
+    }
+   ],
+   "say": "Boing!"
+  }
+ },
+ {
+  "user": "You are a ball. Food 73 (full), energy 85 (fine). Holding: nothing.\nYou see:\n- stick: 1 north, 1 west\n- gap: 2 east\n- berry: 1 north, 3 east (can't reach as ball: there's a gap in the way)\n- rock: 3 north, 1 east\n- tree: 2 north, 4 west (1 fruit up in it)\n- mushroom: 3 north, 4 east (can't reach as ball: there's a gap in the way)\n- berry: 8 north\n- tower: 7 north, 2 west (the wizard's, deliver things here)\nThe wizard says: \"bring me a berry from up high\"",
+  "decision": {
+   "thought": "The berry is up high. As a spring I can jump up, grab it, and bring it back.",
+   "plan": [
+    {
+     "do": "morph",
+     "arg": "spring"
+    },
+    {
+     "do": "grab",
+     "arg": "berry"
+    },
+    {
+     "do": "deliver",
+     "arg": "none"
+    }
+   ],
+   "say": "Meadow berry!"
+  }
+ },
+ {
+  "user": "You are a blob. Food 8 (STARVING), energy 67 (fine). Holding: nothing.\nYou see:\n- stick: 1 west\n- gap: 2 east\n- berry: 3 east (can't reach as blob: there's a gap in the way)\n- rock: 2 north, 1 east\n- tree: 1 north, 4 west (2 fruit up in it)\n- mushroom: 2 north, 4 east (can't reach as blob: there's a gap in the way)\n- berry: 7 north\n- tower: 6 north, 2 west (the wizard's, deliver things here)\nThe wizard says nothing.",
+  "decision": {
+   "thought": "My tummy is rumbling. I'll get that berry.",
+   "plan": [
+    {
+     "do": "eat",
+     "arg": "berry"
+    }
+   ],
+   "say": "Food!"
+  }
+ },
+ {
+  "user": "You are a blob. Food 80 (full), energy 88 (fine). Holding: nothing.\nYou see:\n- tree: 1 east (3 fruit up in it)\n- mushroom: 4 north, 1 west\n- stick: 1 south, 4 east\n- rock: 1 north, 6 east\n- gap: 7 east\n- tower: 5 north, 3 east (the wizard's, deliver things here)\n- berry: 9 north (up high; can't reach as blob: it's up too high to climb)\n- berry: 1 south, 8 east (can't reach as blob: there's a gap in the way)\nThe wizard says: \"find a mushrom and eat it - and don't dawdle\"",
+  "decision": {
+   "thought": "Food! There's a berry I can reach.",
+   "plan": [
+    {
+     "do": "eat",
+     "arg": "berry"
+    }
+   ],
+   "say": "Yummy!"
+  }
+ },
+ {
+  "user": "You are a blob. Food 49 (full), energy 31 (tired). Holding: nothing.\nYou see:\n- gap: 2 east\n- berry: 3 north\n- rock: 2 south, 1 east\n- tower: 2 north, 2 west (the wizard's, deliver things here)\n- stick: 4 south, 1 west\n- mushroom: 2 south, 4 east (can't reach as blob: there's a gap in the way)\n- gate: 4 north, 2 east (very low, flat things fit under)\n- mushroom: 1 north, 6 west\n- tree: 3 south, 4 west (3 fruit up in it)\nThe wizard says: \"deliver a mushroom\"",
+  "decision": {
+   "thought": "The wizard wants a mushroom. I'll carry it to the tower instead of eating it.",
+   "plan": [
+    {
+     "do": "grab",
+     "arg": "mushroom"
+    },
+    {
+     "do": "deliver",
+     "arg": "none"
+    }
+   ],
+   "say": "Fetched!"
+  }
+ },
+ {
+  "user": "You are a blob. Food 62 (full), energy 44 (tired). Holding: nothing.\nYou see:\n- mushroom: 2 south\n- berry: 3 north, 1 east (up high; can't reach as blob: it's up too high to climb)\n- berry: 4 north, 1 west (up high; can't reach as blob: it's up too high to climb)\n- tower: 1 south, 4 east (the wizard's, deliver things here)\n- tree: 6 south, 2 east (1 fruit up in it)\n- gate: 1 north, 8 east (very low, flat things fit under)\nThe wizard says: \"dinner time! and be quick about it\"",
+  "decision": {
+   "thought": "Food! There's a berry I can reach.",
+   "plan": [
+    {
+     "do": "eat",
+     "arg": "berry"
+    }
+   ],
+   "say": "Munch munch~"
+  }
+ },
+ {
+  "user": "You are a blob. Food 25 (hungry), energy 43 (tired). Holding: nothing.\nYou see:\n- tower: 2 east (the wizard's, deliver things here)\n- mushroom: 1 south, 2 west\n- berry: 4 north, 1 west (up high; can't reach as blob: it's up too high to climb)\n- berry: 1 north, 4 east\n- tree: 5 south (2 fruit up in it)\n- gap: 1 south, 6 east\n- gate: 2 north, 6 east (very low, flat things fit under)\n- stick: 6 south, 3 east\n- rock: 4 south, 5 east\nThe wizard says: \"be spring\"",
+  "decision": {
+   "thought": "The wizard wants me to be a spring. Squish!",
+   "plan": [
+    {
+     "do": "morph",
+     "arg": "spring"
+    }
+   ],
+   "say": "I'm a spring!"
+  }
+ },
+ {
+  "user": "You are a blob. Food 23 (hungry), energy 60 (fine). Holding: nothing.\nYou see:\n- mushroom: 2 north\n- tree: 2 south, 2 east (3 fruit up in it)\n- tower: 3 north, 4 east (the wizard's, deliver things here)\n- berry: 7 north, 1 east (up high; can't reach as blob: it's up too high to climb)\n- stick: 3 south, 5 east\n- rock: 1 south, 7 east\n- gap: 8 east\n- berry: 8 north, 1 west (up high; can't reach as blob: it's up too high to climb)\nThe wizard says: \"get hold of the stick right now\"",
+  "decision": {
+   "thought": "A stick! I'll grab it.",
+   "plan": [
+    {
+     "do": "grab",
+     "arg": "stick"
+    }
+   ],
+   "say": "Got it!"
+  }
+ },
+ {
+  "user": "You are a blob. Food 40 (hungry), energy 85 (fine). Holding: nothing.\nYou see:\n- gap: 1 east\n- berry: 2 north, 1 west\n- rock: 3 south\n- tower: 1 north, 3 west (the wizard's, deliver things here)\n- gate: 3 north, 1 east (very low, flat things fit under)\n- mushroom: 5 north, 1 east (can't reach as blob: a low gate is in the way)\n- mushroom: 3 south, 3 east (can't reach as blob: there's a gap in the way)\n- berry: 5 south, 2 east (can't reach as blob: there's a gap in the way)\n- stick: 5 south, 2 west\nThe wizard says: \"feed yourself\"",
+  "decision": {
+   "thought": "Food! There's a berry I can reach.",
+   "plan": [
+    {
+     "do": "eat",
+     "arg": "berry"
+    }
+   ],
+   "say": "Munch munch~"
+  }
+ }
+]

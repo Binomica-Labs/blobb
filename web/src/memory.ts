@@ -213,17 +213,20 @@ export class Memory {
     return this.skills.map((s) => `${s.name} = ${describePlan(s.steps)}`);
   }
 
-  /** Training data for a dream: observation without recalled memories -> the plan that earned praise.
-   *  Same shape as the curriculum, so the trainer treats them alike. */
+  /** Training data for a dream: observation without recalled memories -> the plan it tried, and how that
+   *  went. Same shape as the curriculum. Good ones (reward > 0) are learned; bad ones - plans that failed,
+   *  or that the wizard 👎'd - are there for brains that can learn to avoid them (the LLM's dream skips them). */
   exportForDream(name: string): object {
     const system = systemPrompt(name);
     return {
       version: 1,
       name,
       exported: new Date().toISOString(),
-      samples: this.attempts.filter((a) => a.reward > 0 && !a.dreamed).map((a) => ({
+      samples: this.attempts.filter((a) => a.reward !== 0 && a.executed.length && !a.dreamed).map((a) => ({
         id: a.id, system, user: a.obsClean, reward: a.reward, owner: a.rated,
         assistant: canonical({ thought: a.decision.thought, plan: a.executed, say: a.decision.say }),
+        // Where the world stopped it: the step to learn not to take there (a 👎 is about the whole plan).
+        ...(a.reward < 0 && !a.rated && a.results.some((r) => !r.ok) ? { failedStep: a.results.findIndex((r) => !r.ok) } : {}),
       })),
     };
   }

@@ -127,6 +127,10 @@ class Samples(unittest.TestCase):
             bad.write_text("{nope")
             with self.assertRaises(SystemExit):
                 dream.load_samples(cur, [bad], 600)
+            # The game exports failures and 👎s too (for its own brain); the LLM only learns the good ones.
+            mem.write_text(json.dumps({"samples": [{"system": "s", "user": "u", "assistant": "a", "reward": -1, "owner": True},
+                                                   {"system": "s", "user": "u", "assistant": "a", "reward": 0.3}]}))
+            self.assertEqual(len(dream.load_samples(None, [mem], 600)), 1)
             Path(d, "list.json").write_text("[1, 2]")
             self.assertEqual(len(dream.load_samples(None, [Path(d, "list.json")], 600)), 0)
 

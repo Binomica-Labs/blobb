@@ -1,6 +1,7 @@
 // Wires the world, the brain, the 3D view and the chat UI together.
 
 import { OllamaBackend, WEBLLM_MODEL, WebLLMBackend, type Backend } from "./brain";
+import { ScratchBackend, fetchBrain } from "./scratch";
 import { DreamPeek } from "./dream";
 import { Errands, STORY_LENGTH, type Errand } from "./errands";
 import { Game, type GameEvent } from "./game";
@@ -15,9 +16,14 @@ import { makeWorld, objById, restoreWorld, tick } from "./world";
 let activeTab = true;
 const whileActive = (s: Store): Store => ({ load: () => s.load(), save: (d) => { if (activeTab) s.save(d); } });
 
+const BRAINS = ["own", "webllm", "ollama"] as const;
+type Brain = (typeof BRAINS)[number];
+
 interface Settings {
   name: string;
-  backend: "webllm" | "ollama";
+  backend: Brain;
+  /** Which of its own brains: "" = the one it hatched with, "genN" = a dream's (served by serve.mjs). */
+  ownBrain: string;
   ollamaUrl: string;
   ollamaModel: string;
   autonomy: boolean;
@@ -25,10 +31,10 @@ interface Settings {
   useMemory: boolean;
 }
 
-const local = location.hostname === "localhost" || location.hostname === "127.0.0.1";
 const DEFAULTS: Settings = {
   name: "Blobb",
-  backend: local ? "ollama" : "webllm",
+  backend: "own",
+  ownBrain: "",
   ollamaUrl: "http://localhost:11434",
   ollamaModel: "qwen2.5:0.5b",
   autonomy: true,
@@ -49,12 +55,17 @@ function loadSettings(): Settings {
   const saved = read("blobb.settings");
   const out: Settings = { ...DEFAULTS };
   if (typeof saved !== "object" || saved === null) return out;
+  // Saves from before it had its own brain stored the old default (the 350 MB LLM) as if it were a choice:
+  // start those on its own brain. The LLM is still one click away in ⚙.
+  const fromBeforeOwnBrain = !("ownBrain" in saved);
   for (const [k, v] of Object.entries(saved as Record<string, unknown>)) {
     if (!(k in DEFAULTS) || typeof v !== typeof DEFAULTS[k as keyof Settings]) continue;
-    if (k === "backend" && v !== "ollama" && v !== "webllm") continue;
+    if (k === "backend" && !(BRAINS as readonly unknown[]).includes(v)) continue;
+    if (k === "ownBrain" && !/^(gen\d+)?$/.test(String(v))) continue;
     Object.assign(out, { [k]: v });
   }
   if (!out.name.trim()) out.name = DEFAULTS.name;
+  if (fromBeforeOwnBrain) out.backend = DEFAULTS.backend;
   return out;
 }
 const settings = loadSettings();
@@ -142,6 +153,11 @@ const brainStatus = $("brainStatus");
 const loader = $("loader");
 
 function makeBackend(): Backend {
+  if (settings.backend === "own") {
+    const gen = settings.ownBrain;
+    return new ScratchBackend(gen ? `Own brain · ${gen}` : "Own brain", fetchBrain(gen ? `brains/${gen}/` : "brain/"), 0.7,
+      () => new Worker(new URL("./scratch-worker.js", import.meta.url), { type: "module" }));
+  }
   return settings.backend === "ollama"
     ? new OllamaBackend(settings.ollamaUrl.replace(/\/$/, ""), settings.ollamaModel, {
       get: (k) => { try { return localStorage.getItem(k); } catch { return null; } },
@@ -165,6 +181,14 @@ async function loadBrain(): Promise<void> {
     loader.hidden = true;
     addLog("system", `✨ The spellbook glows and ${settings.name} plops out of another dimension. Tell it what to do!`);
   } catch (e) {
+    // A dreamed brain lives next to the trainer; opened elsewhere (or deleted), wake the one it hatched with.
+    if (settings.backend === "own" && settings.ownBrain) {
+      addLog("system", `${settings.name}'s ${settings.ownBrain} brain isn't here, so it wakes with the one it hatched with.`);
+      settings.ownBrain = "";
+      saveSettings();
+      await loadBrain();
+      return;
+    }
     $("loaderTitle").textContent = "The summoning fizzled";
     $("loaderText").textContent = e instanceof Error ? e.message : String(e);
     $("loaderGo").hidden = false;
@@ -263,9 +287,10 @@ function openSettings(): void {
 
 $("settingsBtn").addEventListener("click", openSettings);
 $("closeSettings").addEventListener("click", () => {
-  const before = `${settings.backend}|${settings.ollamaUrl}|${settings.ollamaModel}`;
+  const before = `${settings.backend}|${settings.ownBrain}|${settings.ollamaUrl}|${settings.ollamaModel}`;
   settings.name = $<HTMLInputElement>("setName").value.trim() || "Blobb";
-  settings.backend = document.querySelector<HTMLInputElement>('input[name="backend"]:checked')?.value === "ollama" ? "ollama" : "webllm";
+  const picked = document.querySelector<HTMLInputElement>('input[name="backend"]:checked')?.value;
+  settings.backend = BRAINS.find((b) => b === picked) ?? "own";
   settings.ollamaUrl = $<HTMLInputElement>("setOllamaUrl").value.trim() || DEFAULTS.ollamaUrl;
   settings.ollamaModel = $<HTMLInputElement>("setOllamaModel").value.trim() || DEFAULTS.ollamaModel;
   settings.autonomy = $<HTMLInputElement>("setAutonomy").checked;
@@ -274,7 +299,7 @@ $("closeSettings").addEventListener("click", () => {
   saveSettings();
   applySettings();
   $("settings").hidden = true;
-  if (before !== `${settings.backend}|${settings.ollamaUrl}|${settings.ollamaModel}` || !game.brain) {
+  if (before !== `${settings.backend}|${settings.ownBrain}|${settings.ollamaUrl}|${settings.ollamaModel}` || !game.brain) {
     loader.hidden = true;
     void maybeAutoLoad();
   }
@@ -288,7 +313,7 @@ function applySettings(): void {
 
 $("exportBtn").addEventListener("click", () => {
   const data = memory.exportForDream(settings.name) as { samples: { id: string }[] };
-  if (!data.samples.length) { addLog("system", "No new good memories to dream about since the last export."); return; }
+  if (!data.samples.length) { addLog("system", "No new memories to dream about since the last export."); return; }
   const blob = new Blob([JSON.stringify(data, null, 1)], { type: "application/json" });
   const a = Object.assign(document.createElement("a"), {
     href: URL.createObjectURL(blob), download: `blobb-memories-${new Date().toISOString().slice(0, 19).replace(/:/g, "")}.json`,
@@ -425,8 +450,16 @@ $("playHere").addEventListener("click", () => { location.reload(); });
 // ---------- dreams ----------
 
 new DreamPeek(() => settings.name, (model) => {
-  settings.backend = "ollama";
-  settings.ollamaModel = model;
+  // Its own brain's dreams are "own:genN"; the LLM's are Ollama tags.
+  if (model.startsWith("own:")) {
+    const gen = model.slice(4);
+    if (!/^gen\d+$/.test(gen)) return;
+    settings.backend = "own";
+    settings.ownBrain = gen;
+  } else {
+    settings.backend = "ollama";
+    settings.ollamaModel = model;
+  }
   saveSettings();
   addLog("system", `${settings.name} wakes up with a new brain: ${model}.`);
   void loadBrain();

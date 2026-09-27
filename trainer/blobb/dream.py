@@ -65,6 +65,11 @@ def valid(s) -> bool:
     return isinstance(s, dict) and all(isinstance(s.get(k), str) and s[k] for k in ("system", "user", "assistant"))
 
 
+def _reward(s: dict) -> float:
+    r = s.get("reward", 1)  # older exports only had good memories
+    return r if isinstance(r, (int, float)) else 0
+
+
 def load_samples(curriculum: Path | None, memories: list[Path], max_curriculum: int) -> list[dict]:
     samples: list[dict] = []
     if curriculum and curriculum.exists():
@@ -85,7 +90,9 @@ def load_samples(curriculum: Path | None, memories: list[Path], max_curriculum: 
             export = json.loads(Path(path).read_text())
         except (OSError, json.JSONDecodeError) as ex:
             raise SystemExit(f"can't read memories from {path}: {ex}")
-        good = [s for s in (export.get("samples") or []) if valid(s)] if isinstance(export, dict) else []
+        # Only what went well: the game also exports failures and 👎s (for its own brain to avoid),
+        # and fine-tuning on those would teach the LLM to repeat them.
+        good = [s for s in (export.get("samples") or []) if valid(s) and _reward(s) > 0] if isinstance(export, dict) else []
         if not good:
             print(f"no usable samples in {path}", flush=True)
         for s in good:

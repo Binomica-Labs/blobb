@@ -63,7 +63,7 @@ const STORY: Errand[] = [
     letter: "Wizard, only the mushroom in the walled garden is fit for my tonic. Mind the gate, it's very low. - H.",
     grumble: "The gate is low. The blob is squishy. I shouldn't have to explain this.",
     thanks: "Garden mushroom delivered. Hazel says her tonic 'fixes grumpiness'. The nerve.",
-    hint: "get the mushroom from the walled garden",
+    hint: "bring me the mushroom from the walled garden",
     check: (w) => take(w, (d) => d.kind === "mushroom" && inBox(d, 10, 1, 13, 4)),
   },
   {

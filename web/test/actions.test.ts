@@ -21,6 +21,20 @@ describe("plateau berries (too high)", () => {
     expect(ok.ok).toBe(true);
     expect(w.blob.food).toBeGreaterThan(food);
   });
+  it("a spring goes for the berries up high, even with one by its feet (the meadow errand)", () => {
+    const w = makeWorld();
+    at(w, 3, 7); // next to the low snack berry at 3,8
+    const high = (x: number, y: number) => tileAt(w, x, y).h >= 2;
+    expect(runStep(w, { do: "grab", arg: "berry" }).ok).toBe(true);
+    const low = w.objs.find((o) => o.id === w.blob.holding);
+    expect(low && high(low.home?.[0] ?? low.x, low.home?.[1] ?? low.y)).toBe(false);
+    const w2 = makeWorld();
+    at(w2, 3, 7);
+    expect(runStep(w2, { do: "morph", arg: "spring" }).ok).toBe(true);
+    expect(runStep(w2, { do: "grab", arg: "berry" }).ok).toBe(true);
+    const got = w2.objs.find((o) => o.id === w2.blob.holding);
+    expect(got?.home && tileAt(w2, got.home[0], got.home[1]).h).toBeGreaterThanOrEqual(2);
+  });
   it("a stick can hook a plateau berry down", () => {
     const w = makeWorld();
     for (const o of w.objs) if (o.kind === "berry" && o.x > 5) o.state = "gone";

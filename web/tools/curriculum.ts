@@ -7,6 +7,7 @@ import { runStep, type Step } from "../src/actions";
 import { canonical, describePlan, systemPrompt, type Decision } from "../src/brain";
 import { look, observe } from "../src/perception";
 import { SHAPES, THINGS, makeWorld, objById, standable, tileAt, type Shape, type World } from "../src/world";
+import { PARAPHRASES, shapePhrasings, wizardly } from "./paraphrases";
 
 const pick = <T>(xs: readonly T[]): T => {
   const x = xs[Math.floor(Math.random() * xs.length)];
@@ -74,15 +75,24 @@ const empty = (w: World) => { w.blob.holding = null; for (const o of w.objs) if 
 const FAMILIES: Family[] = [
   {
     name: "eat", weight: 3,
-    says: ["eat something", "you look hungry, eat", "go eat", "find some food", "have a snack", "eat a berry", "dinner time!", "grab a bite", "eat the mushroom"],
+    says: ["eat something", "you look hungry, eat", "go eat", "find some food", "have a snack", "dinner time!", "grab a bite"],
     plans: (w) => [[S("eat", "berry")], [S("eat", "mushroom")], [...toBlob(w), S("eat", "berry")], [...toBlob(w), S("eat", "mushroom")]],
     goal: ate,
     thought: (p) => `Food! There's a ${p[p.length - 1]?.arg ?? "snack"} I can reach.`,
     reply: ["Nom nom!", "Yummy!", "Food!", "Munch munch~"],
   },
+  // Asked for one food in particular: that one, not whichever is closest.
+  ...(["berry", "mushroom"] as const).map((k): Family => ({
+    name: `eat-${k}`, weight: 1,
+    says: [`eat a ${k}`, `eat the ${k}`],
+    plans: (w) => [[S("eat", k)], [...toBlob(w), S("eat", k)]],
+    goal: ate,
+    thought: () => `The wizard wants me to eat a ${k}. There's one I can reach.`,
+    reply: ["Nom nom!", "Yummy!", "Munch munch~"],
+  })),
   ...SHAPES.map((shape): Family => ({
     name: `morph-${shape}`, weight: 1,
-    says: [`turn into a ${shape}`, `become a ${shape}!`, `can you be a ${shape}?`, `${shape} shape please`, `change into a ${shape}`, `morph into a ${shape}`],
+    says: [`turn into a ${shape}`, `become a ${shape}!`, `can you be a ${shape}?`, `${shape} shape please`, `change into a ${shape}`, `morph into a ${shape}`, ...shapePhrasings(shape)],
     setup: (w) => { if (w.blob.shape === shape) w.blob.shape = pick(SHAPES.filter((s) => s !== shape)); },
     plans: () => [[S("morph", shape)]],
     goal: (a) => a.blob.shape === shape,
@@ -191,9 +201,8 @@ const FAMILIES: Family[] = [
     reply: ["Here's your stick!", "Stick delivery!", "Fetched!", "For you, wizard!"],
   },
   {
-    name: "fetch-food", weight: 2.5,
-    says: ["bring me a mushroom", "fetch a mushroom for the tower", "a villager wants a mushroom, go get one",
-      "bring me a berry", "fetch a berry and deliver it", "get a berry and bring it to the tower", "mrs pennywhistle wants a mushroom"],
+    name: "fetch-food", weight: 1,
+    says: ["bring me some food", "fetch something to eat"],
     setup: (w) => { empty(w); if (w.blob.food < 40) w.blob.food = 60; },
     plans: (w) => (["mushroom", "berry"] as const).flatMap((k) => [[S("grab", k), S("deliver")], [...toBlob(w), S("grab", k), S("deliver")]]),
     naive: () => [S("deliver")],
@@ -201,10 +210,28 @@ const FAMILIES: Family[] = [
     thought: (p) => `The wizard wants a ${p.find((s) => s.do === "grab")?.arg ?? "thing"}. I'll carry it to the tower instead of eating it.`,
     reply: ["Special delivery!", "Here you go!", "Plop! For the tower.", "Fetched!"],
   },
+  ...(["mushroom", "berry"] as const).map((k): Family => ({
+    name: `fetch-${k}`, weight: 1.5,
+    says: k === "mushroom"
+      ? ["bring me a mushroom", "fetch a mushroom for the tower", "a villager wants a mushroom, go get one", "mrs pennywhistle wants a mushroom"]
+      : ["bring me a berry", "fetch a berry and deliver it", "get a berry and bring it to the tower"],
+    setup: (w) => { empty(w); if (w.blob.food < 40) w.blob.food = 60; },
+    plans: (w) => [[S("grab", k), S("deliver")], [...toBlob(w), S("grab", k), S("deliver")]],
+    naive: () => [S("deliver")],
+    goal: delivered(k),
+    thought: () => `The wizard wants a ${k}. I'll carry it to the tower instead of eating it.`,
+    reply: ["Special delivery!", "Here you go!", "Plop! For the tower.", "Fetched!"],
+  })),
   {
     name: "fetch-meadow-berry", weight: 1.5,
     says: ["bring me a berry from up high", "the baker wants a berry from the high meadow", "fetch a berry from the ledge and deliver it"],
-    setup: (w) => { empty(w); hideNear(w, (x, y, k) => k === "berry" && (x > 5 || snack(x, y))); at(w, 5 + Math.floor(Math.random() * 3), 2 + Math.floor(Math.random() * 5)); },
+    // Usually with low berries in sight too: "from up high" has to mean spring first (a spring goes for
+    // high things), not just whichever berry is nearest.
+    setup: (w) => {
+      empty(w);
+      if (chance(0.3)) hideNear(w, (x, y, k) => k === "berry" && (x > 5 || snack(x, y)));
+      if (chance(0.5)) at(w, 5 + Math.floor(Math.random() * 3), 2 + Math.floor(Math.random() * 5));
+    },
     plans: (w) => [[...morphTo(w, "spring"), S("grab", "berry"), S("deliver")]],
     naive: () => [S("grab", "berry"), S("deliver")],
     goal: delivered("berry", (h) => h !== null && h[0] <= 4 && h[1] <= 4),
@@ -220,6 +247,63 @@ const FAMILIES: Family[] = [
     goal: delivered("mushroom", (h) => h !== null && h[0] >= 10 && h[1] <= 4),
     thought: () => "The gate is low. As a puddle I can slide under, grab the mushroom and slide back out.",
     reply: ["Slide and fetch!", "Sploosh, got it!", "Under and back!"],
+  },
+  // ---------- the story's other errands, and handing over what it's already carrying ----------
+  {
+    name: "deliver", weight: 1,
+    says: ["deliver it to the tower", "bring it to the tower", "take that to the tower", "hand it over"],
+    setup: (w) => {
+      empty(w);
+      const kind = pick(["stick", "mushroom", "berry"] as const);
+      const o = w.objs.find((x) => x.state === "world" && x.kind === kind);
+      if (o) { o.state = "held"; w.blob.holding = o.id; }
+    },
+    plans: () => [[S("deliver")]],
+    goal: (a, b) => a.deliveries.length > b.deliveries.length,
+    thought: () => "I'm already carrying it. To the tower!",
+    reply: ["Special delivery!", "Here you go!", "For you, wizard!"],
+  },
+  {
+    name: "bridge", weight: 1.5,
+    says: ["push the rock into the gap", "fill the gap with the rock", "make a bridge over the gap", "shove the rock in the hole"],
+    setup: (w) => {
+      w.blob.x = 6 + Math.floor(Math.random() * 5); w.blob.y = 8 + Math.floor(Math.random() * 6);
+      w.blob.holding = null;
+    },
+    plans: (w) => [[S("push", "rock")], [...toBlob(w), S("push", "rock")]],
+    goal: (a, b) => a.tiles.some((t, i) => t.kind === "ground" && b.tiles[i]?.kind === "gap"),
+    thought: () => "If I push the rock into the gap, it becomes a bridge!",
+    reply: ["Heave ho!", "Bridge time!", "Rock and roll!"],
+  },
+  {
+    name: "fetch-gap-mushroom", weight: 1.5,
+    says: ["bring me the mushroom from across the gap", "fetch the mushroom on the other side of the gap", "the mayor wants the mushroom from beyond the gap"],
+    setup: (w) => {
+      empty(w);
+      hideNear(w, (x, y, k) => k === "mushroom" && !(x >= 12 && y >= 9));
+      w.blob.x = 6 + Math.floor(Math.random() * 5); w.blob.y = 8 + Math.floor(Math.random() * 6);
+    },
+    plans: (w) => chance(0.6)
+      ? [[...morphTo(w, "spring"), S("grab", "mushroom"), S("deliver")], [S("push", "rock"), ...toBlob(w), S("grab", "mushroom"), S("deliver")]]
+      : [[S("push", "rock"), ...toBlob(w), S("grab", "mushroom"), S("deliver")], [...morphTo(w, "spring"), S("grab", "mushroom"), S("deliver")]],
+    naive: () => [S("grab", "mushroom"), S("deliver")],
+    goal: delivered("mushroom", (h) => h !== null && h[0] >= 12 && h[1] >= 9),
+    thought: (p) => p.some((s) => s.do === "push") ? "A gap! I'll push the rock in to make a bridge, then fetch the mushroom." : "A gap! As a spring I can jump it, grab the mushroom and jump back.",
+    reply: (p) => p.some((s) => s.do === "push") ? ["Bridge and fetch!", "Heave ho, got it!"] : ["Boing and back!", "Over and fetched!"],
+  },
+  {
+    name: "fetch-tree-fruit", weight: 1.5,
+    says: ["knock a fruit from the tree and bring it", "get a berry out of the tree and bring it to me", "the children want a fruit from the big tree"],
+    setup: (w) => {
+      empty(w);
+      w.blob.x = 3 + Math.floor(Math.random() * 7); w.blob.y = 9 + Math.floor(Math.random() * 5);
+      const tree = w.objs.find((o) => o.kind === "tree");
+      if (tree) tree.fruit = 1 + Math.floor(Math.random() * 3);
+    },
+    plans: (w) => [[...morphTo(w, "ball"), S("push", "tree"), S("grab", "berry"), S("deliver")]],
+    goal: delivered("berry", (h) => h === null),
+    thought: () => "I'll ram the tree as a ball to knock a fruit down, then carry it to the tower.",
+    reply: ["Bonk and deliver!", "Fruit for the kids!", "Ram, grab, go!"],
   },
 ];
 
@@ -258,7 +342,9 @@ function make(f: Family): Sample[] {
   const w = randomWorld();
   f.setup?.(w);
   if (!standable(w, w.blob.x, w.blob.y) || tileAt(w, w.blob.x, w.blob.y).kind !== "ground") return [];
-  const say = pick(f.says) || null;
+  // The family's own wordings plus the paraphrase bank, roughed up the way the wizard types.
+  const base = pick([...f.says, ...(PARAPHRASES[f.name] ?? [])]);
+  const say = base ? (chance(0.7) ? wizardly(base) : base) : null;
   let answer: Step[] | null = null;
   for (const plan of f.plans(w)) {
     if (!plan.length) continue;

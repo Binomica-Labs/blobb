@@ -189,18 +189,25 @@ export function candidates(w: World, kind: Thing): Target[] {
   return w.objs.filter((o) => o.state === "world" && o.kind === kind).map((o) => ({ kind, x: o.x, y: o.y, obj: o }));
 }
 
-/** The nearest thing of this kind you can actually get to (or the nearest at all, with a path of null). */
+/** The nearest thing of this kind you can actually get to (or the nearest at all, with a path of null).
+ *  A spring goes for things up high: that's what you turn into one for, and without it no plan could
+ *  ever say "the berry on the meadow, not the one by my feet". */
 export function pickTarget(w: World, kind: Thing): { target: Target; path: PathStep[] | null } | null {
   const b = w.blob;
   const cands = candidates(w, kind).sort((p, q) => dist(b.x, b.y, p.x, p.y) - dist(b.x, b.y, q.x, q.y));
   const first = cands[0];
   if (!first) return null;
-  let best: { target: Target; path: PathStep[] } | null = null;
-  for (const c of cands.slice(0, 6)) {
+  const here = tileAt(w, b.x, b.y).h;
+  const high = (c: Target) => tileAt(w, c.x, c.y).h - here >= 2;
+  const pool = b.shape === "spring" ? [...new Set([...cands.filter(high).slice(0, 6), ...cands.slice(0, 6)])] : cands.slice(0, 6);
+  let best: { target: Target; path: PathStep[]; high: boolean } | null = null;
+  for (const c of pool) {
     const path = findPath(w, b.shape, reachGoal(w, c.x, c.y, c.kind));
-    if (path && (!best || path.length < best.path.length)) best = { target: c, path };
+    if (!path) continue;
+    const up = b.shape === "spring" && high(c);
+    if (!best || (up && !best.high) || (up === best.high && path.length < best.path.length)) best = { target: c, path, high: up };
   }
-  return best ?? { target: first, path: null };
+  return best ? { target: best.target, path: best.path } : { target: first, path: null };
 }
 
 /** Walk to a thing, or explain why not. */

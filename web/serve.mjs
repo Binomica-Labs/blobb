@@ -8,6 +8,8 @@ const root = join(import.meta.dirname, "public");
 // Peeking into the blob's dream: the trainer's progress files, read-only, by fixed name only.
 const trainerData = join(import.meta.dirname, "..", "trainer", "data");
 const DREAM = { "/dream/status.json": "dream_status.json", "/dream/map.json": "dream_map.json" };
+// Brains its own dreams grew: /brains/genN/brain.{json,bin}, by that exact shape only.
+const BRAIN = /^\/brains\/(gen\d{1,4})\/(brain\.json|brain\.bin)$/;
 const port = Number(process.argv[2] ?? 8000);
 const host = process.argv[3] ?? "127.0.0.1";
 const TYPES = {
@@ -29,6 +31,16 @@ async function handle(req, res) {
       res.writeHead(200, { "content-type": "application/json", "cache-control": "no-store" }).end(body);
     } catch {
       res.writeHead(404).end("no dream");
+    }
+    return;
+  }
+  const brain = BRAIN.exec(url);
+  if (brain) {
+    try {
+      const body = await readFile(join(trainerData, "scratch", "brains", brain[1], brain[2]));
+      res.writeHead(200, { "content-type": brain[2].endsWith(".json") ? "application/json" : "application/octet-stream", "cache-control": "no-cache" }).end(body);
+    } catch {
+      res.writeHead(404).end("no such brain");
     }
     return;
   }

@@ -21,8 +21,8 @@ jobs:
       - run: npm run verify
 
   trainer:
-    # The unit tests cover the trainer's pure logic (packing, memory planning, sample loading) and
-    # import torch lazily, so they need no ML dependencies at all.
+    # The LLM trainer's tests cover its pure logic and import torch lazily; the own brain's tests
+    # train tiny brains for real, so they get CPU torch (they skip without it).
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -32,4 +32,5 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
+      - run: pip install numpy torch --extra-index-url https://download.pytorch.org/whl/cpu
       - run: python -m unittest discover tests

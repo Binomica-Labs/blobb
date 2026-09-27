@@ -95,6 +95,9 @@ export interface Backend {
   readonly label: string;
   /** Load the model if needed. Progress is 0..1. */
   init(onProgress: (p: number, text: string) => void): Promise<void>;
+  /** False for a brain that learns only in its weights and was never trained on recalled memories in its
+   *  prompt: it gets the clean observation. */
+  readonly readsMemories?: boolean;
   /** `signal` aborts the request (on timeout), so an abandoned answer doesn't hold up the next one. */
   complete(system: string, user: string, schema: object, signal?: AbortSignal): Promise<string>;
 }

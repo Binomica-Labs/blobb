@@ -207,7 +207,9 @@ describe("the wizard's verdict", () => {
     const a = m.add(base(1.3));
     m.rate(a.id, false);
     expect(a.reward).toBeLessThan(0);
-    expect((m.exportForDream("B") as { samples: unknown[] }).samples).toHaveLength(0);
+    // Still dreamed about - as something to avoid.
+    const out = (m.exportForDream("B") as { samples: { reward: number }[] }).samples;
+    expect(out.map((s) => s.reward)).toEqual([a.reward]);
     expect(m.recall("fetch my stick", new Set()).join()).toContain("did NOT like");
   });
 

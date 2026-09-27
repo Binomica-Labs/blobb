@@ -54,7 +54,8 @@
       <label>Name <input id="setName" maxlength="16"></label>
       <fieldset>
         <legend>Brain</legend>
-        <label><input type="radio" name="backend" value="webllm"> In this browser (WebGPU, ~350 MB once)</label>
+        <label><input type="radio" name="backend" value="own"> Its own brain (tiny, grown from scratch, learns by dreaming)</label>
+        <label><input type="radio" name="backend" value="webllm"> A borrowed LLM, in this browser (WebGPU, ~350 MB once)</label>
         <label><input type="radio" name="backend" value="ollama"> Ollama on this computer</label>
         <label class="indent">URL <input id="setOllamaUrl"></label>
         <label class="indent">Model <input id="setOllamaModel" list="ollamaModels"></label>
@@ -62,7 +63,7 @@
       </fieldset>
       <label><input type="checkbox" id="setAutonomy"> Acts on its own when left alone</label>
       <label><input type="checkbox" id="setThoughts"> Show thoughts and plans</label>
-      <label><input type="checkbox" id="setMemory"> Use memories and skills (turn off to test what it learned in its weights)</label>
+      <label><input type="checkbox" id="setMemory"> Borrowed LLM: remind it of memories and skills (turn off to test what it learned in its weights). Its own brain only learns by dreaming.</label>
       <div class="row">
         <button id="exportBtn">Export memories for dreaming</button>
         <button id="skillsBtn">Skills &amp; lessons</button>
@@ -96,7 +97,7 @@
       <div id="dreamMapWrap" hidden>
         <div id="dreamMap"></div>
         <small>Its brain, layer by layer: from what it sees (top) to what it says (bottom). Each square glows
-          as the dream rewrites it - q/k/v/o decide what to pay attention to, gate/up/down do the thinking.</small>
+          as the dream rewrites it - the first columns decide what to pay attention to, the last ones do the thinking.</small>
       </div>
       <div class="row"><button id="dreamUse" hidden>Wake up with the new brain</button><button id="closeDream" class="primary">Close</button></div>
     </div>

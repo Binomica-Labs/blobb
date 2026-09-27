@@ -120,7 +120,8 @@ export class Game {
         let d: Decision;
         try {
           const brain = this.brain;
-          const raw = await askWithTimeout((signal) => brain.complete(systemPrompt(this.opts.name), obsFull,
+          const obs = brain.readsMemories === false ? obsClean : obsFull;
+          const raw = await askWithTimeout((signal) => brain.complete(systemPrompt(this.opts.name), obs,
             schema(this.memory.skills.map((s) => s.name)), signal), BRAIN_TIMEOUT_S);
           d = normalize(raw);
         } finally {
