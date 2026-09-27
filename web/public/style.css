@@ -1,0 +1,145 @@
+:root {
+  --bg: #bfe6ff;
+  --panel: rgba(255, 255, 255, 0.9);
+  --ink: #1f2a33;
+  --muted: #6b7a86;
+  --accent: #2fae8f;
+  --owner: #dff3ff;
+  --letter: #fbf5e6;
+  --blob: #e3f8ef;
+  --gold: #b7860b;
+  --bad: #c0392b;
+  --line: rgba(31, 42, 51, 0.12);
+  --radius: 14px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --panel: rgba(24, 30, 38, 0.92);
+    --ink: #e6edf3;
+    --muted: #93a1ad;
+    --owner: #1f3a4d;
+    --letter: #2e2a22;
+    --blob: #173a31;
+    --gold: #e0b74a;
+    --line: rgba(255, 255, 255, 0.12);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --panel: rgba(24, 30, 38, 0.92);
+  --ink: #e6edf3;
+  --muted: #93a1ad;
+  --owner: #1f3a4d;
+  --letter: #2e2a22;
+  --blob: #173a31;
+  --gold: #e0b74a;
+  --line: rgba(255, 255, 255, 0.12);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); color: var(--ink);
+  font: 15px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+button { font: inherit; color: inherit; background: var(--panel); border: 1px solid var(--line);
+  border-radius: 10px; padding: 6px 10px; cursor: pointer; }
+button:active { transform: scale(0.96); }
+button.primary { background: var(--accent); color: #fff; border-color: transparent; }
+input { font: inherit; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; min-width: 0; }
+
+#scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+
+#hud { position: fixed; top: env(safe-area-inset-top, 0); left: 0; right: 0; display: flex; gap: 10px; align-items: center;
+  padding: 10px 16px; pointer-events: none; }
+#hud > * { pointer-events: auto; }
+.bars { display: grid; gap: 4px; background: var(--panel); padding: 6px 10px; border-radius: var(--radius); }
+.bar { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+.track { width: 90px; height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; }
+.track i { display: block; height: 100%; width: 50%; background: var(--accent); transition: width 0.3s, background 0.3s; }
+.track i.low { background: var(--bad); }
+#status { background: var(--panel); padding: 6px 10px; border-radius: var(--radius); display: grid; font-size: 13px; }
+#held { color: var(--muted); }
+.compass { margin-left: auto; background: var(--panel); border-radius: 50%; width: 36px; height: 36px; display: grid;
+  place-items: center; font-size: 12px; font-weight: 600; }
+#settingsBtn, #dreamBtn { width: 36px; height: 36px; border-radius: 50%; padding: 0; }
+#dreamBtn.asleep { animation: snooze 2.4s ease-in-out infinite; }
+@keyframes snooze { 50% { box-shadow: 0 0 0 6px rgba(138, 92, 255, 0.35); transform: translateY(-2px); } }
+
+#bubble { position: fixed; transform: translate(-50%, -100%); max-width: 220px; background: #fff; color: #1f2a33;
+  padding: 6px 10px; border-radius: 12px; font-size: 14px; pointer-events: none; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+#bubble::after { content: ""; position: absolute; left: 50%; bottom: -6px; border: 6px solid transparent; border-bottom: 0;
+  border-top-color: #fff; transform: translateX(-50%); }
+#thinking { position: fixed; transform: translate(-50%, -100%); display: flex; gap: 4px; background: #fff; padding: 6px 10px;
+  border-radius: 12px; pointer-events: none; }
+#thinking span { width: 6px; height: 6px; border-radius: 50%; background: #9aa; animation: dot 1s infinite; }
+#thinking span:nth-child(2) { animation-delay: 0.15s; }
+#thinking span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes dot { 50% { transform: translateY(-4px); background: var(--accent); } }
+
+#panel { position: fixed; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; gap: 6px;
+  padding: 8px 16px calc(10px + env(safe-area-inset-bottom, 0)); background: var(--panel);
+  border-radius: var(--radius) var(--radius) 0 0; max-height: 42vh; box-shadow: 0 -2px 12px rgba(0,0,0,0.08); }
+@media (min-width: 900px) {
+  #panel { left: auto; top: 70px; right: 16px; bottom: 16px; width: 380px; max-height: none; border-radius: var(--radius); }
+}
+#letter { background: var(--letter); border: 1px solid var(--line); border-radius: 10px; padding: 6px 10px; font-size: 13px; }
+#letter { max-height: 40vh; overflow: auto; }
+#letter summary { cursor: pointer; }
+#letter.new summary { animation: fresh-letter 1.4s ease-in-out infinite; }
+@keyframes fresh-letter { 50% { color: var(--accent); } }
+#elsewhere { z-index: 20; }
+#letter p { margin: 6px 0 0; }
+#letterText { font-family: Georgia, "Times New Roman", serif; }
+#letterGrumble { color: var(--muted); font-style: italic; }
+#letterGrumble::before { content: "You grumble: "; font-style: normal; }
+.msg.errand { align-self: center; color: var(--accent); font-size: 13px; font-weight: 600; text-align: center; }
+
+#dream .card { background: #120e26; color: #e9e4ff; }
+#dream small, #dreamDetail { color: #b3a9d9; }
+#dreamAbout { font-style: italic; min-height: 1.2em; margin: 0; }
+#dreamLoss { width: 100%; height: 60px; display: block; }
+#dreamLoss polyline { fill: none; stroke: #ffd36b; stroke-width: 2; vector-effect: non-scaling-stroke; }
+#dreamMap { display: grid; gap: 2px; font-size: 10px; margin-bottom: 6px; }
+#dreamMap b { color: #8f86b8; font-weight: 500; text-align: center; }
+#dreamMap i { height: 10px; border-radius: 2px; transition: background 1.5s; }
+#dreamMap i.fresh { animation: shimmer 1.6s ease-out; }
+@keyframes shimmer { 0% { box-shadow: 0 0 6px 2px #fff6c9; } 100% { box-shadow: none; } }
+#log { overflow-y: auto; flex: 1; min-height: 60px; display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+.msg { padding: 5px 10px; border-radius: 12px; max-width: 85%; word-wrap: break-word; }
+.msg.owner { align-self: flex-end; background: var(--owner); }
+.msg.blob { align-self: flex-start; background: var(--blob); }
+.msg.thought { align-self: flex-start; color: var(--muted); font-style: italic; font-size: 13px; padding: 0 10px; }
+.msg.plan { align-self: flex-start; font: 12px ui-monospace, monospace; color: var(--muted); padding: 0 10px; }
+.msg.step { align-self: flex-start; font-size: 13px; padding: 0 10px; }
+.msg.step.ok::before { content: "✓ "; color: var(--accent); }
+.msg.step.fail::before { content: "✗ "; color: var(--bad); }
+.msg.learned { align-self: center; color: var(--gold); font-size: 13px; font-weight: 600; text-align: center; }
+.msg.system { align-self: center; color: var(--muted); font-size: 12px; text-align: center; }
+body.hide-thoughts .msg.thought, body.hide-thoughts .msg.plan { display: none; }
+
+#suggest { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+#suggest button { white-space: nowrap; font-size: 13px; padding: 4px 10px; border-radius: 999px; }
+#feedback { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+#skillForm { display: flex; gap: 6px; }
+#skillForm input { width: 150px; padding: 4px 8px; }
+#brainStatus { margin-left: auto; font-size: 12px; color: var(--muted); }
+#chat { display: flex; gap: 8px; }
+#chat input { flex: 1; font-size: 16px; }
+#chat button { background: var(--accent); color: #fff; border: none; width: 44px; }
+
+.sheet { position: fixed; inset: 0; background: rgba(0,0,0,0.35); display: grid; place-items: center; padding: 16px; z-index: 10; }
+.sheet[hidden] { display: none; }
+.card { background: var(--panel); border-radius: var(--radius); padding: 16px 18px; width: min(460px, 100%);
+  max-height: 90vh; overflow: auto; display: grid; gap: 10px; }
+.card h2 { margin: 0; font-size: 18px; }
+.card label { display: flex; gap: 8px; align-items: center; }
+.card label.indent { padding-left: 24px; }
+.card label input:not([type]) { flex: 1; }
+fieldset { border: 1px solid var(--line); border-radius: 10px; display: grid; gap: 6px; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.row.danger button { color: var(--bad); }
+progress { width: 100%; }
+#knowledgeBody h3 { font-size: 14px; margin: 8px 0 4px; }
+#knowledgeBody ul { margin: 0; padding-left: 18px; font-size: 13px; }
+#knowledgeBody li button { font-size: 11px; padding: 1px 6px; margin-left: 6px; }

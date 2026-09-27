@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+  <meta name="theme-color" content="#bfe6ff">
+  <title>Blobb</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <meta name="description" content="An old wizard, a spellbook, and a blob from another dimension that learns to run your errands.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="scene"></canvas>
+
+  <header id="hud">
+    <div class="bars">
+      <div class="bar" title="Food"><span>🍓</span><div class="track"><i id="food"></i></div></div>
+      <div class="bar" title="Energy"><span>⚡</span><div class="track"><i id="energy"></i></div></div>
+    </div>
+    <div id="status"><b id="shape">blob</b><span id="held"></span></div>
+    <div class="compass" title="North is away from the starting camera">N↑</div>
+    <button id="dreamBtn" hidden aria-label="Peek into the dream">🌙</button>
+    <button id="settingsBtn" aria-label="Settings">⚙</button>
+  </header>
+
+  <div id="bubble" hidden></div>
+  <div id="thinking" hidden><span></span><span></span><span></span></div>
+
+  <section id="panel">
+    <details id="letter" open>
+      <summary>📜 Letter from <b id="letterFrom"></b></summary>
+      <p id="letterText"></p>
+      <p id="letterGrumble"></p>
+    </details>
+    <div id="log" aria-live="polite"></div>
+    <div id="suggest"></div>
+    <div id="feedback">
+      <button id="good" title="Good blob! Reward the last attempt">👍</button>
+      <button id="bad" title="No - that wasn't right">👎</button>
+      <button id="skillBtn" title="Name the last plan that worked, so it can do it again">⭐ Name it</button>
+      <form id="skillForm" hidden><input id="skillName" placeholder="skill name, e.g. ledge hop" maxlength="24"><button>Save</button></form>
+      <span id="brainStatus"></span>
+    </div>
+    <form id="chat">
+      <input id="msg" placeholder="Talk to Blobb…" autocomplete="off" enterkeyhint="send">
+      <button aria-label="Send">➤</button>
+    </form>
+  </section>
+
+  <div id="settings" class="sheet" hidden>
+    <div class="card">
+      <h2>Settings</h2>
+      <label>Name <input id="setName" maxlength="16"></label>
+      <fieldset>
+        <legend>Brain</legend>
+        <label><input type="radio" name="backend" value="webllm"> In this browser (WebGPU, ~350 MB once)</label>
+        <label><input type="radio" name="backend" value="ollama"> Ollama on this computer</label>
+        <label class="indent">URL <input id="setOllamaUrl"></label>
+        <label class="indent">Model <input id="setOllamaModel" list="ollamaModels"></label>
+        <datalist id="ollamaModels"></datalist>
+      </fieldset>
+      <label><input type="checkbox" id="setAutonomy"> Acts on its own when left alone</label>
+      <label><input type="checkbox" id="setThoughts"> Show thoughts and plans</label>
+      <label><input type="checkbox" id="setMemory"> Use memories and skills (turn off to test what it learned in its weights)</label>
+      <div class="row">
+        <button id="exportBtn">Export memories for dreaming</button>
+        <button id="skillsBtn">Skills &amp; lessons</button>
+      </div>
+      <div class="row danger">
+        <button id="resetWorld">Reset island</button>
+        <button id="forget">Forget everything</button>
+      </div>
+      <div class="row"><button id="closeSettings" class="primary">Done</button></div>
+    </div>
+  </div>
+
+  <div id="knowledge" class="sheet" hidden>
+    <div class="card">
+      <h2>What Blobb knows</h2>
+      <div id="knowledgeBody"></div>
+      <div class="row"><button id="closeKnowledge" class="primary">Close</button></div>
+    </div>
+  </div>
+
+  <div id="dream" class="sheet" hidden>
+    <div class="card">
+      <h2>🌙 <span id="dreamTitle"></span></h2>
+      <p id="dreamDetail"></p>
+      <progress id="dreamBar" max="1" value="0"></progress>
+      <p id="dreamAbout"></p>
+      <div id="dreamLossWrap" hidden>
+        <svg id="dreamLoss" viewBox="0 0 300 60" preserveAspectRatio="none"><polyline points=""/></svg>
+        <small>How wrong it still is - lower means it's learning. Now: <b id="dreamLossNow"></b></small>
+      </div>
+      <div id="dreamMapWrap" hidden>
+        <div id="dreamMap"></div>
+        <small>Its brain, layer by layer: from what it sees (top) to what it says (bottom). Each square glows
+          as the dream rewrites it - q/k/v/o decide what to pay attention to, gate/up/down do the thinking.</small>
+      </div>
+      <div class="row"><button id="dreamUse" hidden>Wake up with the new brain</button><button id="closeDream" class="primary">Close</button></div>
+    </div>
+  </div>
+
+  <div id="elsewhere" class="sheet" hidden>
+    <div class="card">
+      <h2>Blobb is in another tab</h2>
+      <p>It's being played in another tab or window now, so this one has stopped (two would overwrite each other's saves).</p>
+      <div class="row"><button id="playHere" class="primary">Play here instead</button></div>
+    </div>
+  </div>
+
+  <div id="loader" class="sheet" hidden>
+    <div class="card">
+      <h2 id="loaderTitle">Summon Blobb</h2>
+      <p id="loaderText"></p>
+      <progress id="loaderBar" max="1" value="0" hidden></progress>
+      <div class="row"><button id="loaderGo" class="primary">Summon</button><button id="loaderSettings">Settings</button></div>
+    </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

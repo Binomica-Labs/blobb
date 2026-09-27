@@ -1,0 +1,12 @@
+# Python
+.venv/
+__pycache__/
+
+# Node
+web/node_modules/
+
+# Built by `npm run build` (CI builds it for Pages)
+web/public/js/
+
+# Everything the trainer makes: model weights, live dream files, the generated curriculum, the lock
+trainer/data/

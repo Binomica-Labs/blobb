@@ -1,0 +1,19 @@
+{
+  "name": "Blobb",
+  "short_name": "Blobb",
+  "description": "An old wizard, a spellbook, and a blob from another dimension that learns to run your errands.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#1d1640",
+  "theme_color": "#bfe6ff",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

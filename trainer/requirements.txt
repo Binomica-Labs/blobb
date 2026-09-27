@@ -1,0 +1,8 @@
+# The dream trainer (CPU is fine - a gen-1 dream takes ~45 min on a laptop i7).
+# CPU-only torch keeps the install ~1 GB instead of ~5:
+#   python -m venv .venv && .venv/bin/pip install -r trainer/requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
+torch>=2.14
+transformers>=5.17,<6
+peft>=0.21
+safetensors>=0.8
+accelerate>=1.15
